@@ -11,38 +11,7 @@ const ImageUpload = () => {
     const [stencilSelected, setStencilSelected] = useState('');
     const [stencilImageMoveId, setStencilImageMoveId] = useState('');
 
-    useEffect(() => {
-        const canvas = canvasRef?.current;
-        const listener = (event) => {
-            const { x, y} = getCursorPosition(canvas, event);
-            const createdStencil = document.createElement('img');
-            createdStencil.src = stencilSelected;
-            createdStencil.width = 40;
-            createdStencil.style.position = 'absolute';
-            createdStencil.setAttribute('draggable', 'true');
-            createdStencil.style.top = y.toString() + 'px';
-            createdStencil.style.left = x.toString() + 'px';
-            createdStencil.id = new Date().getTime();
-            createdStencil.ondragstart = (event) => {
-                setStencilImageMoveId(event.target.id);
-            }
-
-            document.getElementById('canvasStencil').appendChild(createdStencil);
-            setStencilSelected('');
-        }
-        
-        if(stencilSelected ) {
-            canvas.addEventListener('click', listener);
-        }
-
-        return () => {
-            canvas.removeEventListener('click', listener);
-        }
-    }, [stencilSelected]);
-
-
-
-
+    // Selects the Stencil to be painted on the wall
     const onImageSelected = (event) => {
         if(selectedImage){
             if(stencilSelected) {
@@ -52,6 +21,14 @@ const ImageUpload = () => {
             }
         }
     };
+
+    // On Drop of Stencil Event to drop the stencil in the canvas
+    const onDropOfStencil = (event) => {
+        const {x, y} = getCursorPosition(canvasRef?.current, event);
+        const image = document.getElementById(stencilImageMoveId);
+        image.style.top = (y - ((50/100) * image.height)).toString() + 'px';
+        image.style.left = (x - ((50/100) * image.width)).toString() + 'px';
+    }
  
     // Image Upload Handler
     const onImageUpload = (event) => {
@@ -71,7 +48,6 @@ const ImageUpload = () => {
     const onColorChange = (event) => {
         setSelectedColor(event.target.value);
     };
-
 
     // Draw Image within the CanvasContainer
     const drawImage = (imageURL) => {
@@ -102,6 +78,7 @@ const ImageUpload = () => {
       return {x, y, top, left, right, bottom};
     }
 
+
     useEffect(() => {
         if(selectedImage !== '' && stencilSelected === '')
             drawImage(selectedImage);
@@ -124,11 +101,35 @@ const ImageUpload = () => {
         }
     }, [selectedColor, selectedImage, stencilSelected]);
 
-    const onDropOfStencil = (event) => {
-        const {x, y} = getCursorPosition(canvasRef?.current, event);
-        document.getElementById(stencilImageMoveId).style.top = y.toString() + 'px';
-        document.getElementById(stencilImageMoveId).style.left = x.toString() + 'px';
-    }
+    useEffect(() => {
+        const canvas = canvasRef?.current;
+        const listener = (event) => {
+            const { x, y} = getCursorPosition(canvas, event);
+            const createdStencil = document.createElement('img');
+            createdStencil.src = stencilSelected;
+            createdStencil.width = 45;
+            createdStencil.height = 45;
+            createdStencil.style.position = 'absolute';
+            createdStencil.setAttribute('draggable', 'true');
+            createdStencil.style.top = (y - ((50/100) * createdStencil.height)).toString() + 'px';
+            createdStencil.style.left = (x - ((50/100) * createdStencil.width)).toString() + 'px';
+            createdStencil.id = new Date().getTime();
+            createdStencil.ondragstart = (event) => {
+                setStencilImageMoveId(event.target.id);
+            }
+
+            document.getElementById('canvasStencil').appendChild(createdStencil);
+            setStencilSelected('');
+        }
+        
+        if(stencilSelected ) {
+            canvas.addEventListener('click', listener);
+        }
+
+        return () => {
+            canvas.removeEventListener('click', listener);
+        }
+    }, [stencilSelected]);
 
     return (
         <div className={styles.imageUploadContainer}>
