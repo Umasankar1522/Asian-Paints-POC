@@ -5,7 +5,7 @@ import { onClickUndo } from './undo.helper';
 
 import stencil from '../../src/stencil.png'
 import stencil2 from '../../src/stencil2.png';
-import test from '../Assets/2.png';
+import test from '../Assets/1.png';
 
 
 const ImageUpload = () => {
@@ -15,7 +15,7 @@ const ImageUpload = () => {
     const [selectedColor, setSelectedColor] = useState('#000000');
     const [stencilSelected, setStencilSelected] = useState('');
     const [stencilImageMoveId, setStencilImageMoveId] = useState('');
-    // const [images, setImages] = useState('');
+    const [images, setImages] = useState([]);
 
     const [events, setEvents] = useState([]); // store all Events
 
@@ -89,8 +89,9 @@ const ImageUpload = () => {
 
     useEffect(() => {
         if(selectedImage !== '') {
-            drawImage(selectedImage);
-            setEvents([{eventName: 'image', imageURL: selectedImage}]);
+            const addImage = {url: selectedImage, id: new Date().getTime()}
+            setImages([addImage]);
+            setEvents([{eventName: 'image', imageURL: addImage}]);
         }
     }, [selectedImage]);
 
@@ -103,8 +104,9 @@ const ImageUpload = () => {
             if(stencilSelected === '' || stencilSelected === 'unselected') {
                 // RedrawImage
                 console.log(coordinates);
-                drawImage(test);
-                setEvents(prev => [...prev, {eventName: 'image', imageURL: test}]);
+                const addImage = {url: test, id: new Date().getTime()}
+                setImages(prev => [...prev, addImage]);
+                setEvents(prev => [...prev, {eventName: 'image', data: addImage}]);
             }
         };
         canvas.addEventListener('mouseup', listener);
@@ -123,6 +125,7 @@ const ImageUpload = () => {
             createdStencil.width = 45;
             createdStencil.height = 45;
             createdStencil.style.position = 'absolute';
+            createdStencil.style.zIndex = '9999';
             createdStencil.setAttribute('draggable', 'true');
             createdStencil.style.top = (y - ((50/100) * createdStencil.height)).toString() + 'px';
             createdStencil.style.left = (x - ((50/100) * createdStencil.width)).toString() + 'px';
@@ -134,7 +137,7 @@ const ImageUpload = () => {
                 setStencilImageMoveId(event.target.id);
             };
 
-            document.getElementById('canvasStencil').appendChild(createdStencil);
+            document.getElementById('canvasArea').appendChild(createdStencil);
             setStencilSelected('unselected');
             setEvents(prev => [...prev, {eventName: 'stencilImage', id: createdStencil.id, top: createdStencil.style.top, left: createdStencil.style.left}])
         }
@@ -147,7 +150,7 @@ const ImageUpload = () => {
             canvas.removeEventListener('click', listener);
         }
     }, [stencilSelected]);
-    console.log(events);
+
     return (
         <div className={styles.imageUploadContainer}>
             <div className={styles.menuContainer}>
@@ -164,15 +167,24 @@ const ImageUpload = () => {
                 <label htmlFor='colorPicker' />
                 <input type='color' name='color picker' id='colorPicker' value={selectedColor} onChange={onColorChange}/>
             </div>
+
+            {/* stencils container and Undo Button */}
             <div className={styles.stencilContainer}>
                 <img src={stencil} alt="stencil" style={{border: `${stencilSelected.includes(stencil) ? '1px solid black': '0'}` }} onClick={onImageSelected} />
                 <img src={stencil2} alt="stencil" style={{border: `${stencilSelected.includes(stencil2) ? '1px solid black': '0'}` }} onClick={onImageSelected} />
-                <button type="button" disabled={events.length < 2} onClick={() => {onClickUndo(events, setEvents, drawImage)}}> undo </button>
+                <button type="button" disabled={events.length < 2} onClick={() => { onClickUndo(events, setEvents)  }}> undo </button>
             </div>
+
+            {/* main canvas area */}
             <div className={styles.mainCanvasArea}>
-                <div className={styles.canvasContainer} id={'canvasStencil'} style={{position: 'relative'}}
+                <div className={styles.canvasContainer} id={'canvasArea'} style={{position: 'relative'}} ref={canvasRef}
                 onDragOver={(event) => {event.preventDefault()}} onDrop={onDropOfStencil} onTouchCancel={onDropOfStencil}>
-                    <canvas id='image-canvas' ref={canvasRef} />
+                    {/* <canvas id='image-canvas' ref={canvasRef} /> */}
+                    {images.map((image, index) => 
+                    <img src={image.url} key={index} id={image.id} alt={`layer-${index}`} style={{position: `${index === 0 ? 'relative' : 'absolute'}`, 
+                    objectFit: 'fit', width: '100%', height: '100%', zIndex: index,
+                    top: 0, left: 0 }} />
+                     )}
                 </div>
             </div>
         </div>

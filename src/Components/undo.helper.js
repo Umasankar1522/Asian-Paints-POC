@@ -1,6 +1,6 @@
 
 
-export const onClickUndo = (events, setEvents, drawImage) => {
+export const onClickUndo = (events, setEvents) => {
     const lastEvent = events[events.length - 1];
     const undoEvents = events.slice(0, events.length - 1);
     setEvents(undoEvents);
@@ -17,11 +17,6 @@ export const onClickUndo = (events, setEvents, drawImage) => {
         }
         document.getElementById(lastEvent.id).remove();
     } else if(lastEvent.eventName === 'image') {
-        for(let i = undoEvents.length - 1; i >= 0; i--) { 
-            if(undoEvents[i].eventName === 'image') {
-                drawImage(undoEvents[i].imageURL);
-                return;
-            }
-        }
+        document.getElementById(lastEvent.data.id).remove();
     }
 };
