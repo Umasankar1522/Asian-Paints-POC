@@ -1,9 +1,11 @@
 import React, {useEffect, useRef, useState} from 'react';
 import styles from './ImageUpload.module.css';
+
+import { onClickUndo } from './undo.helper';
+
 import stencil from '../../src/stencil.png'
 import stencil2 from '../../src/stencil2.png';
-import test from '../Assets/1.png';
-// import paintedImage from '../Assets/paintedImage.png';
+import test from '../Assets/2.png';
 
 
 const ImageUpload = () => {
@@ -13,6 +15,9 @@ const ImageUpload = () => {
     const [selectedColor, setSelectedColor] = useState('#000000');
     const [stencilSelected, setStencilSelected] = useState('');
     const [stencilImageMoveId, setStencilImageMoveId] = useState('');
+    // const [images, setImages] = useState('');
+
+    const [events, setEvents] = useState([]); // store all Events
 
     // Selects the Stencil to be painted on the wall
     const onImageSelected = (event) => {
@@ -31,6 +36,7 @@ const ImageUpload = () => {
         const image = document.getElementById(stencilImageMoveId);
         image.style.top = (y - ((50/100) * image.height)).toString() + 'px';
         image.style.left = (x - ((50/100) * image.width)).toString() + 'px';
+        setEvents(prev => [...prev, {eventName: 'stencilImage', id: stencilImageMoveId, top: image.style.top, left: image.style.left}])
     }
  
     // Image Upload Handler
@@ -84,20 +90,22 @@ const ImageUpload = () => {
     useEffect(() => {
         if(selectedImage !== '') {
             drawImage(selectedImage);
+            setEvents([{eventName: 'image', imageURL: selectedImage}]);
         }
-        else
-            return;    
     }, [selectedImage]);
 
+    //  Effects that triggers when ever click actions happens on the canvas
     useEffect(() => {
         const canvas = canvasRef?.current;
         const listener = (event) => {
             const {x, y} = getCursorPosition(canvas, event);
             const coordinates = {x, y, color: selectedColor, image: selectedImage};
-            if(stencilSelected === '' || stencilSelected === 'unselected')
+            if(stencilSelected === '' || stencilSelected === 'unselected') {
                 // RedrawImage
                 console.log(coordinates);
-                // drawImage(test);
+                drawImage(test);
+                setEvents(prev => [...prev, {eventName: 'image', imageURL: test}]);
+            }
         };
         canvas.addEventListener('mouseup', listener);
 
@@ -128,6 +136,7 @@ const ImageUpload = () => {
 
             document.getElementById('canvasStencil').appendChild(createdStencil);
             setStencilSelected('unselected');
+            setEvents(prev => [...prev, {eventName: 'stencilImage', id: createdStencil.id, top: createdStencil.style.top, left: createdStencil.style.left}])
         }
         
         if(stencilSelected !== 'unselected' && stencilSelected !== '') {
@@ -138,7 +147,7 @@ const ImageUpload = () => {
             canvas.removeEventListener('click', listener);
         }
     }, [stencilSelected]);
-
+    console.log(events);
     return (
         <div className={styles.imageUploadContainer}>
             <div className={styles.menuContainer}>
@@ -158,7 +167,7 @@ const ImageUpload = () => {
             <div className={styles.stencilContainer}>
                 <img src={stencil} alt="stencil" style={{border: `${stencilSelected.includes(stencil) ? '1px solid black': '0'}` }} onClick={onImageSelected} />
                 <img src={stencil2} alt="stencil" style={{border: `${stencilSelected.includes(stencil2) ? '1px solid black': '0'}` }} onClick={onImageSelected} />
-
+                <button type="button" disabled={events.length < 2} onClick={() => {onClickUndo(events, setEvents, drawImage)}}> undo </button>
             </div>
             <div className={styles.mainCanvasArea}>
                 <div className={styles.canvasContainer} id={'canvasStencil'} style={{position: 'relative'}}

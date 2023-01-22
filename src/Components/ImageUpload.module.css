@@ -22,7 +22,17 @@
     border: 1px solid black;
 }
 
+.stencilContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .stencilContainer img {
     width: 45px;
     padding: 1rem;
+}
+
+.stencilContainer button {
+    width: 75px;
 }
