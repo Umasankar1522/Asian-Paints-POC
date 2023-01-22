@@ -2,6 +2,9 @@ import React, {useEffect, useRef, useState} from 'react';
 import styles from './ImageUpload.module.css';
 import stencil from '../../src/stencil.png'
 import stencil2 from '../../src/stencil2.png';
+import test from '../Assets/1.png';
+// import paintedImage from '../Assets/paintedImage.png';
+
 
 const ImageUpload = () => {
 
@@ -14,8 +17,8 @@ const ImageUpload = () => {
     // Selects the Stencil to be painted on the wall
     const onImageSelected = (event) => {
         if(selectedImage){
-            if(stencilSelected) {
-                setStencilSelected('');
+            if(stencilSelected !== 'unselected' && stencilSelected !== '' ) {
+                setStencilSelected('unselected');
             } else {
                 setStencilSelected(event.target.src);
             }
@@ -78,28 +81,30 @@ const ImageUpload = () => {
       return {x, y, top, left, right, bottom};
     }
 
+    useEffect(() => {
+        if(selectedImage !== '') {
+            drawImage(selectedImage);
+        }
+        else
+            return;    
+    }, [selectedImage]);
 
     useEffect(() => {
-        if(selectedImage !== '' && stencilSelected === '')
-            drawImage(selectedImage);
-        else
-            return;
-
         const canvas = canvasRef?.current;
-
         const listener = (event) => {
             const {x, y} = getCursorPosition(canvas, event);
             const coordinates = {x, y, color: selectedColor, image: selectedImage};
-            console.log(coordinates);
+            if(stencilSelected === '' || stencilSelected === 'unselected')
+                // RedrawImage
+                console.log(coordinates);
+                // drawImage(test);
         };
-
-        if(!stencilSelected)
-            canvas.addEventListener('mouseup', listener);
+        canvas.addEventListener('mouseup', listener);
 
         return () => {
             canvas.removeEventListener('mouseup', listener);
-        }
-    }, [selectedColor, selectedImage, stencilSelected]);
+        };
+    }, [stencilSelected]);
 
     useEffect(() => {
         const canvas = canvasRef?.current;
@@ -117,12 +122,15 @@ const ImageUpload = () => {
             createdStencil.ondragstart = (event) => {
                 setStencilImageMoveId(event.target.id);
             }
+            createdStencil.ontouchmove = (event) => {
+                setStencilImageMoveId(event.target.id);
+            };
 
             document.getElementById('canvasStencil').appendChild(createdStencil);
-            setStencilSelected('');
+            setStencilSelected('unselected');
         }
         
-        if(stencilSelected ) {
+        if(stencilSelected !== 'unselected' && stencilSelected !== '') {
             canvas.addEventListener('click', listener);
         }
 
@@ -153,8 +161,8 @@ const ImageUpload = () => {
 
             </div>
             <div className={styles.mainCanvasArea}>
-                <div className={styles.canvasContainer} id={'canvasStencil'} style={{position: 'relative'}} 
-                onDragOver={(event) => {event.preventDefault()}} onDrop={onDropOfStencil}>
+                <div className={styles.canvasContainer} id={'canvasStencil'} style={{position: 'relative'}}
+                onDragOver={(event) => {event.preventDefault()}} onDrop={onDropOfStencil} onTouchCancel={onDropOfStencil}>
                     <canvas id='image-canvas' ref={canvasRef} />
                 </div>
             </div>
