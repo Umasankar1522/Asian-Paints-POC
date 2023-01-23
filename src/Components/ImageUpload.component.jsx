@@ -103,8 +103,9 @@ const ImageUpload = () => {
             const coordinates = {x, y, color: selectedColor, image: selectedImage};
             if(stencilSelected === '' || stencilSelected === 'unselected') {
                 // RedrawImage
-                console.log(coordinates);
-                const addImage = {url: test, id: new Date().getTime()}
+                console.log(coordinates, selectedColor);
+
+                const addImage = {url: test, id: new Date().getTime(), color: selectedColor}
                 setImages(prev => [...prev, addImage]);
                 setEvents(prev => [...prev, {eventName: 'image', data: addImage}]);
             }
@@ -114,7 +115,7 @@ const ImageUpload = () => {
         return () => {
             canvas.removeEventListener('mouseup', listener);
         };
-    }, [stencilSelected]);
+    }, [stencilSelected, selectedColor]);
 
     useEffect(() => {
         const canvas = canvasRef?.current;
@@ -181,10 +182,11 @@ const ImageUpload = () => {
                 onDragOver={(event) => {event.preventDefault()}} onDrop={onDropOfStencil} onTouchCancel={onDropOfStencil}>
                     {/* <canvas id='image-canvas' ref={canvasRef} /> */}
                     {images.map((image, index) => 
-                    <img src={image.url} key={index} id={image.id} alt={`layer-${index}`} style={{position: `${index === 0 ? 'relative' : 'absolute'}`, 
-                    objectFit: 'fit', width: '100%', height: '100%', zIndex: index,
-                    top: 0, left: 0 }} />
-                     )}
+                        <img src={image.url} key={index} id={image.id} alt={`layer-${index}`} style={{position: `${index === 0 ? 'relative' : 'absolute'}`, 
+                            objectFit: 'contain', width: '100%', height: '100%', zIndex: index, top: 0, left: 0, color: `${image.color}`,
+                            filter: `opacity(.4) drop-shadow(0 0 0 ${image.color})`
+                        }} />
+                    )}
                 </div>
             </div>
         </div>
