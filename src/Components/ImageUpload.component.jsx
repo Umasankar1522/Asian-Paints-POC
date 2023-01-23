@@ -110,7 +110,8 @@ const ImageUpload = () => {
                 setEvents(prev => [...prev, {eventName: 'image', data: addImage}]);
             }
         };
-        canvas.addEventListener('mouseup', listener);
+        if(selectedImage)
+            canvas.addEventListener('mouseup', listener);
 
         return () => {
             canvas.removeEventListener('mouseup', listener);
