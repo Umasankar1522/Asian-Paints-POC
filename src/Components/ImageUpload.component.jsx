@@ -115,7 +115,7 @@ const ImageUpload = () => {
         return () => {
             canvas.removeEventListener('mouseup', listener);
         };
-    }, [stencilSelected, selectedColor]);
+    }, [stencilSelected, selectedColor, selectedImage]);
 
     useEffect(() => {
         const canvas = canvasRef?.current;
