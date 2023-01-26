@@ -1,0 +1,11 @@
+.mainCanvasArea {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: .5rem;
+}
+
+.mainCanvasArea > .canvasContainer {
+    width: 70vw;
+    height: 70vh;
+}
