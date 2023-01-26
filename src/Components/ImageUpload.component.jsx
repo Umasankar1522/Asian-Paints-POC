@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import styles from './ImageUpload.module.css';
 import test from '../Assets/1.png';
-import { getCursorPosition } from '../helpers/util.helper';
+import { getCursorPosition, hexToRGBA } from '../helpers/util.helper';
 
 
 const ImageUpload = ({setImages, setEvents, stencilSelected, baseImage, onBaseImageChange, imageRef}) => {
@@ -43,7 +43,7 @@ const ImageUpload = ({setImages, setEvents, stencilSelected, baseImage, onBaseIm
             const coordinates = {x, y, color: selectedColor, image: baseImage};
             if(stencilSelected === '' || stencilSelected === 'unselected') {
                 // RedrawImage
-                console.log(coordinates, selectedColor);
+                console.log(coordinates, hexToRGBA(selectedColor));
 
                 const addImage = {url: test, id: new Date().getTime(), color: selectedColor}
                 setImages(prev => [...prev, addImage]);
@@ -64,7 +64,7 @@ const ImageUpload = ({setImages, setEvents, stencilSelected, baseImage, onBaseIm
             <section className={styles.menuContainer}>
 
                 {/* Upload Image */}
-                <label htmlFor='imageUpload' class={styles.labelName} >Upload Image</label>
+                <label htmlFor='imageUpload' className={styles.labelName} >Upload Image</label>
                 <input type='file' 
                 name='imageUpload' 
                 id='imageUpload' 
@@ -72,7 +72,7 @@ const ImageUpload = ({setImages, setEvents, stencilSelected, baseImage, onBaseIm
                 onChange={onImageUpload}/>
 
                  {/* Color Picker */}
-                <label htmlFor='colorPicker' class={styles.labelName} >Choose a Color</label>
+                <label htmlFor='colorPicker' className={styles.labelName} >Choose a Color</label>
                 <input type='color' name='color picker' id='colorPicker' value={selectedColor} onChange={onColorChange}/>
 
             </section>
