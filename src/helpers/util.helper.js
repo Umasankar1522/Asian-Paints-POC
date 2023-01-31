@@ -24,7 +24,7 @@ export const hexToRGBA = (hexCode, opacity = 1) => {
         opacity = opacity / 100;   
     }
 
-    return `rgba(${r},${g},${b},${opacity})`;
+    return [r, g, b, opacity];
 };
 
 // Draw Image within the CanvasContainer
