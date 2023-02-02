@@ -2,6 +2,7 @@ import React, { forwardRef, useEffect, useState } from "react";
 import styles from "./ImageUpload.module.css";
 import { getCursorPosition, hexToRGBA } from "../helpers/util.helper";
 import { helpers } from "./../helpers/endpoint.helpers";
+import paintBrush from "../../src/Assets/paint_brush.png";
 
 const base64 = "base64,";
 
@@ -18,6 +19,12 @@ const ImageUpload = forwardRef(
     imageRef
   ) => {
     const [selectedColor, setSelectedColor] = useState("#000000");
+    const [selectedBrush, setSelectedBrush] = useState(false);
+
+    // on select of Paint brush
+    const onSelectedToPaint = () => {
+      setSelectedBrush((prev) => !prev);
+    };
 
     // Image Upload Handler
     const onImageUpload = (event) => {
@@ -78,10 +85,11 @@ const ImageUpload = forwardRef(
         }
       };
 
-      if (baseImage) imageElement.addEventListener("mouseup", listener);
+      if (baseImage && selectedBrush)
+        imageElement.addEventListener("mouseup", listener);
 
       return () => {
-        if (baseImage) imageElement.removeEventListener("mouseup", listener);
+        imageElement.removeEventListener("mouseup", listener);
       };
     }, [
       stencilSelected,
@@ -90,6 +98,7 @@ const ImageUpload = forwardRef(
       imageRef,
       setImages,
       setEvents,
+      selectedBrush,
     ]);
 
     return (
@@ -117,6 +126,14 @@ const ImageUpload = forwardRef(
           value={selectedColor}
           onChange={onColorChange}
         />
+        <div id={styles.paintBrush}>
+          <img
+            src={paintBrush}
+            alt={"..."}
+            onClick={onSelectedToPaint}
+            style={{ backgroundColor: `${selectedBrush ? "#000" : "#fff"}` }}
+          />
+        </div>
       </section>
     );
   }
