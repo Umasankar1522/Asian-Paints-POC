@@ -1,10 +1,10 @@
-import ImageUpload from './Components/ImageUpload.component';
+import Visualizer from './Components/Visualizer.component';
 import './App.css';
 
 function App() {
   return (
     <div className="App">
-      <ImageUpload />
+      <Visualizer />
     </div>
   );
 }

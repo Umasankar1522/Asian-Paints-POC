@@ -1,37 +1,21 @@
-.imageUploadContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-around;
-    height: 100vh;
-}
 .menuContainer {
     display: flex;
-    gap: 1rem;
-}
-
-.mainCanvasArea {
-    display: flex;
     align-items: center;
     justify-content: center;
+    margin: 2rem auto 1rem;
 }
 
-.mainCanvasArea > .canvasContainer {
-    width: 70vw;
-    height: 70vh;
+.labelName {
+    font-size: 1rem;
+    font-weight: 500;
+    margin: 0 .5rem;
 }
 
-.stencilContainer {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.stencilContainer img {
-    width: 45px;
-    padding: 1rem;
-}
-
-.stencilContainer button {
-    width: 75px;
+#paintBrush img {
+    width: 40px;
+    height: 40px;
+    margin-left: auto;
+    margin: 0 2rem;
+    padding: .2rem .5rem;
+    border-radius: 10px;
 }
