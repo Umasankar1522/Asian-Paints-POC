@@ -1,6 +1,7 @@
 import React, { forwardRef, useEffect, useState } from "react";
 import styles from "./ImageUpload.module.css";
 import { getCursorPosition, hexToRGBA } from "../helpers/util.helper";
+import { helpers } from "./../helpers/endpoint.helpers";
 
 const base64 = "base64,";
 
@@ -121,10 +122,12 @@ const ImageUpload = forwardRef(
   }
 );
 
-const baseURL = "http://localhost:8080";
 const fetchImage = (x, y, rgbaCode, base64encodedImage) => {
-  const url = `${baseURL}/getPrecutsWithColor?coordinateX=${x}&coordinateY=${y}&baseImageExt=png&colorR=${rgbaCode[0]}&colorG=${rgbaCode[1]}&colorB=${rgbaCode[2]}`;
-  return fetch(url, { method: "POST", body: base64encodedImage });
+  const url = `${helpers.baseURL}/getPrecutsWithColor?coordinateX=${x}&coordinateY=${y}&baseImageExt=png&colorR=${rgbaCode[0]}&colorG=${rgbaCode[1]}&colorB=${rgbaCode[2]}`;
+  return fetch(url, {
+    method: "POST",
+    body: base64encodedImage,
+  });
 };
 
 export default React.memo(ImageUpload);
